@@ -6,5 +6,5 @@ creator:
 - role: author
   text: mkbook
 lang: de
-cover-image: ../edocs.jpg
----
+cover-image: edocs.jpg
+...
