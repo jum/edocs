@@ -285,6 +285,14 @@ func recipe2md(n *html.Node) (img, md string) {
 					img = htmlelements.GetAttribute(c, "content")
 					fmt.Fprintf(&sb, "![](%s)\n\n", path.Base(img))
 				}
+			case "div":
+				if strings.Contains(htmlelements.GetAttribute(c, "class"), "contentimage") {
+					i := htmlelements.GetElementsByTagName(c, "noscript")
+					if len(i) > 0 {
+						img = htmlelements.GetAttribute(i[0], "data-basename")
+						fmt.Fprintf(&sb, "![](%s)\n\n", path.Base(img))
+					}
+				}
 			default:
 				if debug {
 					fmt.Printf("%v\n", c)
