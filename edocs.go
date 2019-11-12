@@ -88,7 +88,7 @@ func main() {
 		for len(nextPage) > 0 {
 			var f io.ReadCloser
 			if debug {
-				f, err = os.Open("rezeptdb228.html")
+				f, err = os.Open("rezeptdb242.html")
 				if err != nil {
 					panic(err)
 				}
