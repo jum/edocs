@@ -208,11 +208,19 @@ func main() {
 			}
 			fmt.Fprintf(f, "%s", md)
 			f.Close()
-			imgURL, ok := images[r.link]
+			imgPath, ok := images[r.link]
 			if !ok {
 				continue
 			}
-			imgBase := filepath.Base(imgURL)
+			baseURL, err := url.Parse(r.link)
+			if err != nil {
+				panic(err)
+			}
+			imgURL, err := baseURL.Parse(imgPath)
+			if err != nil {
+				panic(err)
+			}
+			imgBase := filepath.Base(imgURL.Path)
 			imgFile := filepath.Join(*outdir, imgBase)
 			_, err = os.Stat(imgFile)
 			if err == nil {
@@ -222,16 +230,22 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			resp, err := http.Get(imgURL)
+			resp, err := http.Get(imgURL.String())
 			if err != nil {
+				f.Close()
+				os.Remove(imgFile)
 				panic(err)
 			}
 			if resp.StatusCode/100 != 2 {
-				fmt.Fprintf(os.Stderr, "%s: %s\n", imgURL, resp.Status)
+				f.Close()
+				os.Remove(imgFile)
+				fmt.Fprintf(os.Stderr, "%s: %s\n", imgURL.String(), resp.Status)
 				os.Exit(1)
 			}
 			_, err = io.Copy(f, resp.Body)
 			if err != nil {
+				f.Close()
+				os.Remove(imgFile)
 				panic(err)
 			}
 			resp.Body.Close()
